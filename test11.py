@@ -111,22 +111,25 @@ adam = tf.keras.optimizers.Adam(
 
 model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 model.summary()
-history = model.fit(training_padded, training_labels, epochs=50)
+history = model.fit(training_padded, training_labels, validation_split=0.2, epochs=30)
 # model.evaluate(testing_padded, testing_labels)
-acc = history.history["acc"]
-val_acc = history.history["val_acc"]
+
+print(history.history.keys())
+
+acc = history.history["accuracy"]
+val_acc = history.history["val_accuracy"]
 loss = history.history["loss"]
 val_loss = history.history["val_loss"]
 
 epochs = range(1, len(acc) + 1)
 plt.plot(epochs, acc, "bo", label="Training acc")
 plt.plot(epochs, val_acc, "b", label="Validation acc")
-plt.title("Training and validation accuracy")
+plt.title("Training and Validation accuracy")
 plt.legend()
-plt.configure()
+plt.figure()
 
 plt.plot(epochs, loss, "bo", label="Training loss")
 plt.plot(epochs, val_loss, "b", label="Validation loss")
-plt.plot("Training and Validation loss")
+plt.title("Training and Validation loss")
 plt.legend()
 plt.show()
