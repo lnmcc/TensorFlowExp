@@ -73,7 +73,7 @@ for item in newlist:
     curr_x = curr_x + 1
     ys.append(newlist[item])
 
-plt.plot(xs, ys)
+#plt.plot(xs, ys)
 # plt.axis([300,10000,0,100])
 # plt.show()
 
