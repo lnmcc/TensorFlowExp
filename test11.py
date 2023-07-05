@@ -13,7 +13,6 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-
 stopwords = ["a", ..., "yourselves"]
 table = str.maketrans("", "", string.punctuation)
 
@@ -61,7 +60,6 @@ word_index = tokenizer.word_index
 # print(word_index)
 reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
 
-
 wc = tokenizer.word_counts
 # print(wc)
 
@@ -94,40 +92,22 @@ testing_labels = np.array(testing_labels)
 # print(training_padded)
 # print(training_labels)
 
+embedding_dim = 64
 model = tf.keras.Sequential(
     [
-        tf.keras.layers.Embedding(20000, 7),
-        tf.keras.layers.GlobalAveragePooling1D(),
-        tf.keras.layers.Dense(
-            8, activation="relu", kernel_regularizer=tf.keras.regularizers.l2(0.01)
-        ),
+        tf.keras.layers.Embedding(20000, embedding_dim),
+        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(embedding_dim)),
+        tf.keras.layers.Dense(24, activation="relu"),
         tf.keras.layers.Dense(1, activation="sigmoid"),
     ]
 )
 
 adam = tf.keras.optimizers.Adam(
-    learning_rate=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=False
+    learning_rate=0.00001, beta_1=0.9, beta_2=0.999, amsgrad=False
 )
 
 model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 model.summary()
 model.fit(training_padded, training_labels, epochs=10)
-# model.evaluate(testing_padded, testing_labels)
+#model.evaluate(testing_padded, testing_labels)
 
-new_index = word_index["new"]
-
-e = model.layers[0]
-weights = e.get_weights()[0]
-print(weights.shape)
-print(reverse_word_index[new_index])
-print(weights[new_index])
-
-out_v = io.open("vecs.tsv", "w", encoding="utf-8")
-out_m = io.open("meta.tsv", "w", encoding="utf-8")
-for word_num in range(1, vocab_size):
-    word = reverse_word_index[word_num]
-    embeddings = weights[word_num]
-    out_m.write(word + "\n")
-    out_v.write("\t".join([str(x) for x in embeddings]) + "\n")
-out_v.close()
-out_m.close()
