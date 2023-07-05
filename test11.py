@@ -96,6 +96,9 @@ embedding_dim = 64
 model = tf.keras.Sequential(
     [
         tf.keras.layers.Embedding(20000, embedding_dim),
+        tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(embedding_dim, return_sequences=True)
+        ),
         tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(embedding_dim)),
         tf.keras.layers.Dense(24, activation="relu"),
         tf.keras.layers.Dense(1, activation="sigmoid"),
@@ -108,6 +111,22 @@ adam = tf.keras.optimizers.Adam(
 
 model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 model.summary()
-model.fit(training_padded, training_labels, epochs=10)
-#model.evaluate(testing_padded, testing_labels)
+history = model.fit(training_padded, training_labels, epochs=50)
+# model.evaluate(testing_padded, testing_labels)
+acc = history.history["acc"]
+val_acc = history.history["val_acc"]
+loss = history.history["loss"]
+val_loss = history.history["val_loss"]
 
+epochs = range(1, len(acc) + 1)
+plt.plot(epochs, acc, "bo", label="Training acc")
+plt.plot(epochs, val_acc, "b", label="Validation acc")
+plt.title("Training and validation accuracy")
+plt.legend()
+plt.configure()
+
+plt.plot(epochs, loss, "bo", label="Training loss")
+plt.plot(epochs, val_loss, "b", label="Validation loss")
+plt.plot("Training and Validation loss")
+plt.legend()
+plt.show()
