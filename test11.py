@@ -109,9 +109,11 @@ adam = tf.keras.optimizers.Adam(
     learning_rate=0.00001, beta_1=0.9, beta_2=0.999, amsgrad=False
 )
 
+
+epochs=30
 model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 model.summary()
-history = model.fit(training_padded, training_labels, validation_split=0.2, epochs=30)
+history = model.fit(training_padded, training_labels, validation_split=0.2, epochs=epochs)
 # model.evaluate(testing_padded, testing_labels)
 
 print(history.history.keys())
@@ -121,15 +123,19 @@ val_acc = history.history["val_accuracy"]
 loss = history.history["loss"]
 val_loss = history.history["val_loss"]
 
-epochs = range(1, len(acc) + 1)
-plt.plot(epochs, acc, "bo", label="Training acc")
-plt.plot(epochs, val_acc, "b", label="Validation acc")
-plt.title("Training and Validation accuracy")
-plt.legend()
-plt.figure()
 
-plt.plot(epochs, loss, "bo", label="Training loss")
-plt.plot(epochs, val_loss, "b", label="Validation loss")
-plt.title("Training and Validation loss")
-plt.legend()
+epochs_range = range(epochs)
+
+plt.figure(figsize=(8, 8))
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy')
+plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy')
+
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss')
+plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.legend(loc='upper right')
+plt.title('Training and Validation Loss')
 plt.show()
