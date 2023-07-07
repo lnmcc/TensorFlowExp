@@ -34,4 +34,41 @@ print(input_sequences[:5])
 xs, labels = input_sequences[:, :-1], input_sequences[:, -1]
 print(labels)
 ys = tf.keras.utils.to_categorical(labels, num_classes=total_words)
-print(ys)
+
+model = tf.keras.Sequential()
+model.add(tf.keras.layers.Embedding(total_words, 8))
+model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(max_sequence_len - 1)))
+model.add(tf.keras.layers.Dense(total_words, activation="Softmax"))
+
+epochs = 1500
+model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+history = model.fit(xs, ys, epochs=epochs, verbose=1)
+
+seed_text = "in the town of athy"
+token_list = tokenizer.texts_to_sequences([seed_text])[0]
+token_list = pad_sequences(
+    [token_list], maxlen=max_sequence_len - 1, padding="pre"
+)
+predicated = np.argmax(model.predict(token_list), axis=-1)
+print(predicated)
+
+for word,index in tokenizer.word_index.items():
+    if index == predicated:
+        print(word)
+        break
+
+print(history.history.keys())
+
+acc = history.history["accuracy"]
+loss = history.history["loss"]
+
+
+epochs_range = range(epochs)
+
+plt.figure(figsize=(8, 8))
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label="Training Accuracy")
+plt.legend(loc="lower right")
+plt.title("Training and Validation Accuracy")
+
+plt.show()
