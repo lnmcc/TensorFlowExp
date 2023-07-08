@@ -37,8 +37,12 @@ ys = tf.keras.utils.to_categorical(labels, num_classes=total_words)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Embedding(total_words, 8))
-model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(max_sequence_len - 1,return_sequences='True')))
-model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(max_sequence_len-1)))
+model.add(
+    tf.keras.layers.Bidirectional(
+        tf.keras.layers.LSTM(max_sequence_len - 1, return_sequences="True")
+    )
+)
+model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(max_sequence_len - 1)))
 model.add(tf.keras.layers.Dense(total_words, activation="Softmax"))
 
 epochs = 1000
